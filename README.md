@@ -1,1 +1,1 @@
-# introductory-econometrics-Wooldrigde_5th_edition_solutions
+# introductory_econometrics_Wooldrigde_5th_edition_solutions
