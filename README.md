@@ -1,0 +1,1 @@
+# introductory-econometrics-Wooldrigde_5th_edition_solutions
