@@ -1,0 +1,95 @@
+---
+title: "Chapter 6"
+output: pdf_document
+---
+
+```{r echo=FALSE}
+library(wooldridge)
+
+```
+
+
+## Ex.1 (wage1)
+
+(i) Use OLS to estimate the following equation
+\begin{equation}
+  log(wage) = \beta_0 + \beta_1educ + \beta_2exper + \beta_3exper^2 + u 
+\end{equation}
+and report the results using the usual format.
+(ii)  Is $exper^2$ statistically significant at the $1\%$ level?
+(iii)  Using the approximation 
+$$
+  \%\Delta \hat{wage} \approx 100(\hat{\beta_2} +2\hat{\beta_3}exper)\Delta exper,
+$$
+     find the approximate return to the fifth year of experience? What is the approximate return to the twentieth year of experience?
+(iv)  At what value of $exper$ does additional experience actually lower predicted log(wage)? How many people have more experience in this sample?
+
+### Solution
+
+(i)  The estimates of Equation 1 is
+```{r,include=FALSE}
+model1 <- lm(log(wage) ~ educ + exper + I(exper^2), data = wage1)
+summary(model1)$coefficients
+```
+
+|        | Estimate | Std. Error | t value |
+|------:|:-----|---------|:------:|
+| Intercept | 0.1281 | 0.1059 | 1.2083 |
+| $educ$ | 0.0937 | 0.0075 | 12.1004 |
+| $exper$ | 0.0410 | 0.0052 | 7.8916 |
+| $exper^2$ | -0.0007 | 0.0001 | -6.1639 |
+
+(ii)  To check the statistical significance of $exper^2$, we compare the *t*-value of $exper^2$ with the critical *t*-value at $1\%$ significance level.  
+  The $1\%$ critical value with 522 degrees of freedom is
+  $$t^* = 2.576 < |t^*_{exper^2}| = 6.1639$$
+ Therefore, $exper^2$ is statistically significant at 1\% level.  
+ 
+(iii)  We have the following approximation
+$$
+  \%\Delta \hat{wage} \approx 100(\hat{\beta_2} +2\hat{\beta_3}exper)\Delta exper,
+$$
+  Plugging in $exper = 5$ in the above equation gives us the approximate return to 5 years of experience
+\begin{equation}
+\begin{split}
+\frac{\%\Delta\hat{wage}}{\Delta exper} & = 100[0.0410+2(-0.007)(5)]\\
+& \approx 3.387
+\end{split}
+\end{equation}
+  This means that the wage increases by 3.387\% in going from 5 to 6 years of experience.  
+  Similarly, the approximate return to the twentieth year of experience is
+\begin{equation}
+\begin{split}
+\frac{\%\Delta\hat{wage}}{\Delta exper} & = 100[0.0410+2(-0.007)(20)]\\
+& \approx 1.247
+\end{split}
+\end{equation}
+ In going from twentieth years of experience to twenty-first year, the wage rate is expected to increase by 1.247\%.  
+ 
+(iv)  The maximum years of experience that actually has a increasing effect on predicted wage rate, i.e., *turning point* is given by
+\begin{equation}
+\begin{split}
+exper^* & = |\hat{\beta_2}/2\hat{\beta_3}|\\
+& = |\frac{0.0410}{-0.0007}|\\
+& = 5.85
+\end{split}
+\end{equation}
+This means that after 6(5.85) years of experience, the return to log(wage) decreases. In the sample we have 390 people who have more than 6 years of experience.
+
+## Ex.2 (wage2)
+
+Consider a model where the return to education depends upon the amount of work experience (and vice versa):
+\begin{equation}
+log(wage) = \beta_0 + \beta_1educ + \beta_2exper + \beta_3educ.exper + u.
+\end{equation}
+(i)  Show that the return to another year of education (in decimal form), holding $exper$ fixed, is $\beta_1 + \beta_3exper$.  
+(ii)  State the null hypothesis that the return to education does not depend on the level of $exper$. What do you think is the appropriate alternative?  
+(iii)  Test the null hypothesis in (ii) against your stated alternative.  
+(iv) Let $\theta_1$ denote the return to education (in decimal form), when $exper = 10:\theta_1 = \beta_1 + 10\beta_3$. Obtain the $\hat{\theta_1}$ and a 95\% confidence interval for $\theta_1$. (Hint: Write $\beta_1 = \theta_1 - 10\beta_3$ and plug this into the equation; then rearrange. This gives the regression for obtaining the confidence interval for $\theta_1$.)
+
+### Solution
+
+(i) 
+\begin{equation}
+\frac{\Delta{log(wage)}}{\Delta educ} = \beta_1educ + \beta_3exper
+\end{equation}
+

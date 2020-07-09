@@ -1,0 +1,166 @@
+---
+title: "Chapter 4"
+author: "Adarsh Rai"
+date: "`r Sys.Date()`"
+output: pdf_document
+---
+
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(wooldridge)
+library(tidyverse)
+library(car)
+```
+
+## Campaign expenditure and election outcomes:  
+
+\begin{equation}
+voteA = \beta_0 + \beta_1 * log(expendA) + \beta_2 * log(expendB) + \beta_3 * prtystrA + u.
+   (\#eq:voteA)
+\end{equation}
+
+(i) What is the interpretation of $\beta_1$?  
+(ii) In terms of parameters, state the null hypothesis that a 1% increase in A's expenditures is offset by  a 1% increase in B's expenditures.  
+(iii) Estimate the given model using the data in VOTE1.RAW and report the results in usual form. Do A's expenditures affect the outcome? What about B's expenditures? Can you use these results to test the hypothesis in part(ii)?  
+(iv) Estimate a model that directly gives the *t* statistic for testing the hypothesis in part (ii). What do you conclude? (Use a two-sided alternative.)  
+
+### Solution
+
+**(i)**  In the model, $\beta_1$ gives the change in the election outcome($voteA$) in favor of Candidate A due to 1% change in               Candidate A's expenditure given that $\beta_2,\beta_3 = 0$.  
+
+**(ii).** The null hypothesis is:  
+          $$H_0 : \beta_1 = 0$$
+          That is, log(expendA) does not affect voteA. Or this means that any change in A's campaigning exp. is offset by change in           B's exp.   
+                    
+
+**(iii)** The model \@ref(eq:voteA) is given as: 
+          $$voteA = \beta_0 + \beta_1 * log(expendA) + \beta_2 * log(expendB) + \beta_3 * prtystrA + u.$$  
+           where,  
+           $voteA$ = percent vote for A,  
+           $expendA$ = camp. expends. by A,  
+           $expendB$ = camp. expends. by B,  
+           $prtystrA$ = party strength(measured by: percent vote for president).
+
+```{r echo=FALSE}
+v_a_reg <- lm(voteA ~ lexpendA + lexpendB + prtystrA, data = vote1)
+
+v_a_reg
+```  
+
+   The estimated $\beta_0$ or ($(\hat{\beta_0)}$) or intercept is:
+  
+```{r echo=FALSE}
+  v_a_reg$coefficients["(Intercept)"]
+```
+
+
+  The estimated $\beta_1$ or ($(\hat{\beta_1)}$) is:
+  
+```{r echo=FALSE}
+  v_a_reg$coefficients["lexpendA"]
+```
+  
+ The estimated $\beta_2$ or ($\hat{\beta_2}$) is:
+  
+```{r echo=FALSE}
+  v_a_reg$coefficients["lexpendB"]
+```
+
+   The estimated $\beta_3$ or ($(\hat{\beta_3)}$) is:
+  
+```{r echo=FALSE}
+  v_a_reg$coefficients["prtystrA"]
+```  
+       
+  The estimated model is: 
+\begin{equation}
+  \hat{voteA} = 45.079 + 6.083log(expendA) - 6.615log(expendB) + 0.152prtystrA
+   (\#eq:estvoteA)
+\end{equation}
+
+  A 1% change in A's expenditure increases the vote outcome in favor of A by 0.06083.  
+  A 1% change in B's expenditure decreases the vote for A by 0.0615.  
+
+
+   The "*t* statistic" is defined as: 
+
+\begin{align}
+t_{\hat{\beta_j}} = \hat{\beta_j}/se\hat{\beta_j}\\
+or, t_{\hat{\beta_1}} = \frac{6.0833}{0.3821}\\
+or, t_{\hat{\beta_1}} = 15.9200
+\end{align}
+
+  The 5% critical value is 1.645, and the 1% critical value is 2.326. Therefore, we can say that "$\hat{\beta_1}$" is   statistically significant even at 1% significance level.  
+
+
+## New Law School graduates and salary.  
+
+\begin{equation}
+log(salary) = \beta_0 + \beta_1LSAT + \beta_2GPA + \beta_3log(libvol) + \beta_4log(cost) + \beta_5rank + u
+\end{equation}
+where,  
+$LSAT$ = median LSAT,  
+$GPA$ = median GPA for the class,  
+$libvol$ = number of volumes in a law school library,  
+$cost$ = annual cost of attending law school,  
+$rank$ = law school ranking (with $rank = 1$ being the best).  
+
+(i) State and test the null hypothesis that the rank of law schools has no *ceteris paribus* effect on median starting salary.  
+(ii) Are features of the incoming class of students---namely, LSAT and GPA---individually or jointly significant for explaining salary? (Be sure to account for missing data on LSAT and GPA.)  
+(iii) Test whether the size of the entering class($clsize$) or the size of the faculty ($faculty$) needs to be added to the equation; carry out a single test. (Be careful to account for missing data on $clsize$ and $faculty$.)  
+(iv) What factors might influence the rank of the law school that are not included in the salary regression?  
+
+### Solution2:  
+
+(i) The null hypothesis is
+    $$H_0: \beta_{rank} = 0$$  
+    i.e., other variables held constant, the rank of the law school does not affect median starting salary.  
+    
+  The alternative hypothesis is
+    $$H_1: \beta_{rank} \neq 0 $$
+    
+  To test the null hypothesis we use *t*-statistic which is defined as:
+\begin{align}
+t_{\hat{\beta_j}} = \hat{\beta_j}/se\hat{\beta_j}\\
+or, t_{\hat{\beta_{rank}}} = \frac{-0.0033}{0.00035}\\
+or, |t_{\hat{\beta_{rank}}}| = 9.541
+\end{align}
+     Therefore $\beta_5$ is statistically different from zero, and a one point increase in rank increases the  starting salary by 0.33%.  
+    
+(ii) Joint Significance of LSAT and GPA:  
+     
+  The unrestricted model is:
+\begin{equation}  
+log(salary) = \beta_0 + \beta_1LSAT + \beta_2GPA + \beta_3log(libvol) + \beta_4log(cost) + \beta_5rank + u
+ (\#eq:unrestricted)
+\end{equation}
+   The estimates are:
+```{r, echo=FALSE}
+unrestricted <- lm(log(salary)~LSAT + GPA + log(libvol) + log(cost) + rank, data = lawsch85)
+ur_summary <- summary(unrestricted)
+ur_summary$coefficients
+```
+  Now, we want to check that whether LSAT and GPA has a significant effect on salary. We state the null hypothesis that LSAT and GPA does not affect salary, or
+     $$H_0:\beta_{LSAT} = 0, \beta_{GPA} = 0$$
+ Hence the alternate hypothesis is $any ~of~ the~ \beta's  \neq 0.$  
+ 
+ The restricted model is:
+\begin{equation}
+log(salary) = \beta_0 + \beta_3log(libvol) + \beta_4log(cost) + \beta_5rank + u
+ (\#eq:restricted)
+\end{equation}
+  
+  The estimates are  
+  
+```{r, echo=FALSE}
+restricted <- lm(log(salary)~log(libvol) + log(cost) + rank, data = lawsch85)
+r_summary <- summary(restricted)
+r_summary$coefficients
+```
+ The F statistic for this test is
+```{r, echo=FALSE}
+h_0 <- c('LSAT','GPA')
+linearHypothesis(unrestricted, h_0)
+```                                

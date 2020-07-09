@@ -1,0 +1,145 @@
+---
+title: "Chapter 5"
+author: "Adarsh Rai"
+date: "`r Sys.Date()`"
+output: pdf_document
+---
+
+
+
+```{r include=FALSE}
+library(wooldridge)
+library(tidyverse)
+```
+
+## Ex 1  (wage1)
+
+(i)  Estimate the equation
+\begin{equation}
+wage = \beta_0 + \beta_1educ + \beta_2exper + \beta_3tenure + u
+\end{equation}
+     Save the residuals and plot a histogram.  
+     
+(ii) Repeat part (i), but with log(*wage*) as the dependent variable.  
+
+(iii) Would you say that normality assumption is closer to being satisfied for the level-level model or the log-level model?  
+
+### Solution
+
+(i)  The estimated equation is:
+
+\begin{equation}
+\hat{wage} = -2.87 + 0.60educ + 0.02exper + 0.17tenure
+\end{equation}
+
+```{r include=FALSE}
+w <- lm(wage~educ + exper + tenure, data = wage1)
+summary(w)$coefficients
+```
+
+  The histogram of the residuals is given below
+  
+  
+```{r echo=FALSE, fig.align='center', fig.height=3.5, fig.width=5.5}
+residuals <- c(summary(w)$residuals)
+qplot(residuals, binwidth = 1.5)
+```
+
+
+(ii) With log(*wage*) as the dependent variable the estimates are 
+
+```{r, echo = FALSE}
+w1 <- lm(log(wage)~educ + exper + tenure, data = wage1)
+w1$coefficients
+```
+
+  The histogram of the residuals in this case where the dependent variable is log(*wage*) is
+  
+```{r echo=FALSE, fig.align='center', fig.height=3.5, fig.width=5.5}
+residuals1 <- c(summary(w1)$residuals)
+qplot(residuals1, binwidth = .2)
+```
+
+(iii)  Looking at the two figures we see that the normality assumption is more satisfied in the second figure(log-level model). Most of the residuals are clustered around mean, 0, and about 95% of the values lies around 1 sd.  
+
+## Ex 2   (gpa2)  
+
+(i)  Using sll 4137 observations, estimate the equation
+\begin{equation}
+colgpa = \beta_0 + \beta_1hsperc + \beta_2sat + u
+\end{equation}
+
+   and report the results in standard form.  
+(ii)  Reestimate the equation in part(i), using the first 2070 observations.  
+(iii)  Find the ratio of the standard errors on *hsperc* from parts (i) and (ii).  Compare this with the result that
+\begin{equation}
+se(\hat{\beta_j}) \approx c_j/\sqrt{n}
+\end{equation}
+
+### Solution  
+
+(i)  The estimated model is 
+\begin{equation}
+\hat{colgpa} = 1.392 - 0.013hsperc + 0.001sat
+\end{equation}
+
+```{r echo=FALSE}
+colgpa <- lm(colgpa ~ hsperc + sat, data = gpa2)
+summary(colgpa)$coefficients
+```
+
+
+
+(ii)  The estimates  using the first 2070 observations is
+```{r echo=FALSE}
+gpa_2 <- head(gpa2, 2070)
+col_2 <- lm(colgpa~hsperc+sat, data = gpa_2)
+summary(col_2)$coefficients
+```
+
+
+
+(iii)  The ratio of standard errors from *hsperc* from (i) & (ii) is
+$$\frac{0.000549466}{0.007185235} = 0.7647155 \approx 0.765~~~~~~~(a)$$
+The square-root of the ratio of the samples is
+$$\sqrt{\frac{2070}{4137}} \approx 0.707~~~~~~~~~~(b) $$
+Eq(a)&(b) are pretty close. This implies that the standard error in using the larger sample size should be about 70.7% of the standard error using the smaller sample.  
+
+## Ex 3  (htv)
+
+(i) Consider a wage equation that includes parents' education levels:
+\begin{equation}
+log(wage) = \beta_0 + \beta_1educ + \beta_2exper + \beta_3motheduc + \beta_4fatheduc + u
+ (\#eq:htv)
+\end{equation}
+    Obtain the LM statistic for
+\begin{equation}
+H_0: \beta_3 = 0, \beta_4 = 0
+ (\#eq:null)
+\end{equation}
+(ii)  Obtain the (asymptotic) *p*-value for the test in part(i).  
+
+### Solution
+
+(i)  In the model(\@ref(eq:htv)), we want to test that parents education (*motheduc* & *fatheduc*) does not effect wage. This is given by equation(\@ref(eq:null)). To test this hypothesis(\@ref(eq:null)), we use *LM*-statistic. The procedure run as follows:  
+      We first run the restricted regression on $educ$ & $exper$ only, and then regress $\tilde{u}$ on all the explanatory variables given in Eq(3), where $\tilde{u}$ is the residuals obtained from regressing *log(wage*) on *educ* and *exper*.This is known as auxilliary regression, and the resulting $R_{\tilde{u}}^2$ is
+
+```{r, echo=FALSE}
+r_wage <- lm(log(wage)~educ+exper, data = htv)
+r_u <- summary(r_wage)$residuals
+u_lm <- lm(r_u~educ + exper + motheduc + fatheduc, data = htv)
+u_sum <-summary(u_lm)
+u_sum$r.squared
+```
+
+   The *LM*-statistic is given as
+  $$LM = nR_{\tilde{u}}^2$$
+  $$or,~~~~~LM = 1230 \times 0.01742796$$
+  $$or,~~~~~LM = 21.43639 \approx 21.436.$$
+  
+
+
+ Under the null hypothesis, *LM*-statistic is distributed asymptotically as a $\chi_q^2$ ramdom variable with $q$ degrees of freedom. Therefore, the *p*-value of the test is
+```{r}
+pchisq(21.436, df = 2, lower.tail = FALSE)
+```
